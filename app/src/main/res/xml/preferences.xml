@@ -2,20 +2,20 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory
-        android:key="pref_key_storage_settings"
-        android:title="Города">
+        android:key="pref_main_category"
+        android:title="@string/settings_title">
 
-    <Preference
-        android:title="Киев"
-        android:key="k"/>
+        <Preference
+            android:key="Kiev"
+            android:title="@string/kiev_title" />
 
-    <Preference
-        android:title="Днепр"
-        android:key="d"/>
+        <Preference
+            android:key="Kharkiv"
+            android:title="@string/kharkiv_title" />
 
-    <Preference
-        android:title="Львов"
-        android:key="l"/>
+        <Preference
+            android:key="Zaporizhia"
+            android:title="@string/zaporizhia_title" />
 
     </PreferenceCategory>
 

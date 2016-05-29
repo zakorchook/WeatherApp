@@ -5,8 +5,7 @@ package com.zakorchook.wetherapp.models;
  */
 public class WeatherData {
 
-    public String sity;
-    public String main;
+    public String city;
     public String description;
     public String icon;
     public double temp;

@@ -4,70 +4,61 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.zakorchook.wetherapp.R;
+import com.zakorchook.wetherapp.RestClient;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link PrefsFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link PrefsFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class PrefsFragment extends PreferenceFragmentCompat {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+import java.util.Locale;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+
+public class PrefsFragment extends PreferenceFragmentCompat implements Preference.OnPreferenceClickListener {
+
+    private static final String KEY_CITY = "KEY_CITY";
+    private static final String TAG = PrefsFragment.class.getSimpleName();
+
+    private String currentCity;
 
     private OnFragmentInteractionListener mListener;
+    private View v;
 
     public PrefsFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment PrefsFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static PrefsFragment newInstance(String param1, String param2) {
+    public static PrefsFragment newInstance(final String CURRENT_CITY) {
         PrefsFragment fragment = new PrefsFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putString(KEY_CITY, CURRENT_CITY);
         fragment.setArguments(args);
         return fragment;
     }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            currentCity = getArguments().getString(KEY_CITY);
+        }
+//        setRetainInstance(true);
+    }
 
+//    @Override
+//    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+//        if (v == null)
+//            v = super.onCreateView(inflater, container, savedInstanceState);
+//        return v;
+//    }
 
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
         addPreferencesFromResource(R.xml.preferences);
-    }
-
-
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(true);
-        }
     }
 
     @Override
@@ -99,18 +90,32 @@ public class PrefsFragment extends PreferenceFragmentCompat {
         super.onPause();
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
+    @Override
+    public boolean onPreferenceClick(Preference preference) {
+        final String KEY = preference.getKey();
+        Log.d(TAG, "onPreferenceClick: " + KEY);
+        if (!KEY.equals(currentCity)) {
+            RestClient.getInstance().getDataBySity(KEY, Locale.getDefault().getLanguage());
+        }
+        getFragmentManager().popBackStack();
+        return false;
+    }
+
+    @Override
+    public boolean onPreferenceTreeClick(Preference preference) {
+        final String KEY = preference.getKey();
+        Log.d(TAG, "onPreferenceTreeClick: " + KEY);
+        if (!KEY.equals(currentCity)) {
+            mListener.onCurrentCityChanged(KEY);
+            RestClient.getInstance().getDataBySity(KEY, Locale.getDefault().getLanguage());
+        }
+        getFragmentManager().popBackStack();
+        return super.onPreferenceTreeClick(preference);
+    }
+
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(boolean hideMenu);
+
+        void onCurrentCityChanged(String currentCity);
     }
 }
