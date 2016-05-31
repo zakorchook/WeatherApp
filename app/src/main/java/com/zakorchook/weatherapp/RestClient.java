@@ -1,4 +1,4 @@
-package com.zakorchook.wetherapp;
+package com.zakorchook.weatherapp;
 
 import android.util.Log;
 
@@ -6,8 +6,8 @@ import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
-import com.zakorchook.wetherapp.bus.ActionProgressBar;
-import com.zakorchook.wetherapp.models.WeatherData;
+import com.zakorchook.weatherapp.bus.ActionProgressBar;
+import com.zakorchook.weatherapp.models.WeatherData;
 
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONException;
@@ -37,15 +37,13 @@ public class RestClient {
     }
 
     private static void setupRestClient() {
-
         client = new OkHttpClient();
-
         client.setReadTimeout(10, TimeUnit.SECONDS);
         client.setConnectTimeout(10, TimeUnit.SECONDS);
         instance = new RestClient();
     }
 
-    public void getDataBySity(final String city, String locale) {
+    public void getDataByCity(final String city, String locale) {
         EventBus.getDefault().post(new ActionProgressBar(true, false));
         final Request request = new Request.Builder()
                 .url(doUrl(city, locale)).build();
@@ -64,7 +62,7 @@ public class RestClient {
                         JSONObject object = new JSONObject(response.body().string());
                         EventBus.getDefault().post(getWeatherDataFromJson(object, city));
                         EventBus.getDefault().post(new ActionProgressBar(false, false));
-                    } catch (JSONException | IllegalStateException e) {
+                    } catch (JSONException | IllegalStateException | IOException e) {
                         Log.e(TAG, "onResponse: ", e);
                         EventBus.getDefault().post(new ActionProgressBar(false, true));
                     }
@@ -76,7 +74,7 @@ public class RestClient {
     }
 
     private String doUrl(String city, String locale) {
-        Log.d(TAG, "doUrl: locale "+locale);
+//        Log.d(TAG, "doUrl: "+ROOT_URL + city + LOCALE_QUERY+ locale + API_KEY);
         return ROOT_URL + city + LOCALE_QUERY+ locale + API_KEY;
     }
 

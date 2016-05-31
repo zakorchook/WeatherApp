@@ -1,13 +1,12 @@
 <resources>
-    <string name="app_name">Wether App</string>
-    <string name="weather_api_key">4cfeba127f9ae481a3f34e615d0c9dcf</string>
+    <string name="app_name">Weather App</string>
 
     <string name="settings_title">Настройки</string>
     <string name="main_category_title">Города</string>
     <string name="kiev_title">Киев</string>
     <string name="kharkiv_title">Харьков</string>
     <string name="zaporizhia_title">Запорожье</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="error">Ошибка подключения!</string>
+    <string name="try_later">Проверте подключение к интернету, и повторите попытку позже.</string>
+    <string name="repeat">Повторить</string>
 </resources>

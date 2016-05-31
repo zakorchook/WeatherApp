@@ -3,7 +3,7 @@
 
     <PreferenceCategory
         android:key="pref_main_category"
-        android:title="@string/settings_title">
+        android:title="@string/main_category_title">
 
         <Preference
             android:key="Kiev"

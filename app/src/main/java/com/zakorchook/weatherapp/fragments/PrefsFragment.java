@@ -1,41 +1,38 @@
-package com.zakorchook.wetherapp.fragments;
+package com.zakorchook.weatherapp.fragments;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
 
-import com.zakorchook.wetherapp.R;
-import com.zakorchook.wetherapp.RestClient;
+import com.zakorchook.weatherapp.R;
+import com.zakorchook.weatherapp.RestClient;
+import com.zakorchook.weatherapp.util.MyConstants;
 
 import java.util.Locale;
 
 
-public class PrefsFragment extends PreferenceFragmentCompat implements Preference.OnPreferenceClickListener {
+public class PrefsFragment extends PreferenceFragmentCompat {
 
-    private static final String KEY_CITY = "KEY_CITY";
     private static final String TAG = PrefsFragment.class.getSimpleName();
+    private static final String KEY_CITY = "KEY_CITY";
+    private static final String KEY_2 = "lastRequestIsFailed";
 
     private String currentCity;
+    private boolean lastRequestIsFailed;
 
     private OnFragmentInteractionListener mListener;
-    private View v;
 
     public PrefsFragment() {
         // Required empty public constructor
     }
 
-    public static PrefsFragment newInstance(final String CURRENT_CITY) {
+    public static PrefsFragment newInstance(final String CURRENT_CITY, boolean lastRequestIsFailed) {
         PrefsFragment fragment = new PrefsFragment();
         Bundle args = new Bundle();
         args.putString(KEY_CITY, CURRENT_CITY);
+        args.putBoolean(KEY_2, lastRequestIsFailed);
         fragment.setArguments(args);
         return fragment;
     }
@@ -44,17 +41,10 @@ public class PrefsFragment extends PreferenceFragmentCompat implements Preferenc
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            currentCity = getArguments().getString(KEY_CITY);
+            currentCity = getArguments().getString(KEY_CITY, MyConstants.KIEV);
+            lastRequestIsFailed = getArguments().getBoolean(KEY_2, false);
         }
-//        setRetainInstance(true);
     }
-
-//    @Override
-//    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-//        if (v == null)
-//            v = super.onCreateView(inflater, container, savedInstanceState);
-//        return v;
-//    }
 
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
@@ -81,40 +71,30 @@ public class PrefsFragment extends PreferenceFragmentCompat implements Preferenc
     @Override
     public void onResume() {
         super.onResume();
-        mListener.onFragmentInteraction(true);
+        mListener.onFragmentPrefsResume(true);
     }
 
     @Override
     public void onPause() {
-        mListener.onFragmentInteraction(false);
+        mListener.onFragmentPrefsResume(false);
         super.onPause();
-    }
-
-    @Override
-    public boolean onPreferenceClick(Preference preference) {
-        final String KEY = preference.getKey();
-        Log.d(TAG, "onPreferenceClick: " + KEY);
-        if (!KEY.equals(currentCity)) {
-            RestClient.getInstance().getDataBySity(KEY, Locale.getDefault().getLanguage());
-        }
-        getFragmentManager().popBackStack();
-        return false;
     }
 
     @Override
     public boolean onPreferenceTreeClick(Preference preference) {
         final String KEY = preference.getKey();
         Log.d(TAG, "onPreferenceTreeClick: " + KEY);
-        if (!KEY.equals(currentCity)) {
+        // If city changed or last request is failed - make new request to server. Else - not needed.
+        if (!KEY.equals(currentCity) || lastRequestIsFailed) {
             mListener.onCurrentCityChanged(KEY);
-            RestClient.getInstance().getDataBySity(KEY, Locale.getDefault().getLanguage());
+            RestClient.getInstance().getDataByCity(KEY, Locale.getDefault().getLanguage());
         }
         getFragmentManager().popBackStack();
         return super.onPreferenceTreeClick(preference);
     }
 
     public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(boolean hideMenu);
+        void onFragmentPrefsResume(boolean hideMenu);
 
         void onCurrentCityChanged(String currentCity);
     }

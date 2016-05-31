@@ -1,4 +1,4 @@
-package com.zakorchook.wetherapp;
+package com.zakorchook.weatherapp;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

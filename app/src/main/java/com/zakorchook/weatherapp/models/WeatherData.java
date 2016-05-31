@@ -1,4 +1,4 @@
-package com.zakorchook.wetherapp.models;
+package com.zakorchook.weatherapp.models;
 
 /**
  * Created by Developer Zaharchuk Mihail on 5/27/2016

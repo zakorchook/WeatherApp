@@ -1,4 +1,4 @@
-package com.zakorchook.wetherapp.bus;
+package com.zakorchook.weatherapp.bus;
 
 /**
  * Created by Мишаня on 29.05.2016

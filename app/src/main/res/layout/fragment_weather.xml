@@ -1,77 +1,90 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:layout_margin="@dimen/activity_horizontal_margin">
+    android:layout_margin="@dimen/activity_horizontal_margin"
+    android:orientation="vertical">
 
     <TextView
+        android:id="@+id/textCity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="City"
-        android:id="@+id/textCity" />
+        android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <LinearLayout
-        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal">
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="@dimen/weather_filed_margin"
+        android:layout_marginTop="@dimen/weather_filed_margin"
+        android:orientation="horizontal"
+        android:weightSum="3">
 
         <ImageView
-            android:id="@+id/image"
+            android:id="@+id/imageWeather"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/weather_image_size"
             android:layout_gravity="center"
-            android:layout_weight="1"/>
+            android:layout_margin="@dimen/weather_filed_margin"
+            android:layout_weight="1"
+            android:src="@drawable/ic_question"
+            tools:ignore="ContentDescription" />
 
         <LinearLayout
+            android:id="@+id/linear1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="2"
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/textTemp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="15c"
-                android:id="@+id/textTemp"
-                android:layout_gravity="center"/>
+                android:layout_gravity="center"
+                android:layout_margin="@dimen/weather_filed_margin"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
+            <FrameLayout
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:layout_gravity="center">
 
-                <TextView
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:text="15c"
-                    android:layout_weight="1"
-                    android:id="@+id/textTempMin"
-                    android:layout_gravity="center"/>
+                    android:gravity="center"
+                    android:orientation="horizontal">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:text="15c"
-                    android:layout_weight="1"
-                    android:id="@+id/textTempMax"
-                    android:layout_gravity="center"/>
+                    <TextView
+                        android:id="@+id/textTempMin"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/weather_filed_margin"
+                        android:layout_weight="1"
+                        android:textAppearance="?android:attr/textAppearanceLarge" />
 
-            </LinearLayout>
+                    <TextView
+                        android:id="@+id/textTempMax"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_margin="@dimen/weather_filed_margin"
+                        android:layout_weight="1"
+                        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+                </LinearLayout>
+
+            </FrameLayout>
 
             <TextView
                 android:id="@+id/description"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Text main"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:layout_gravity="center"/>
+                android:layout_gravity="center"
+                android:layout_margin="@dimen/weather_filed_margin"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
         </LinearLayout>
 
     </LinearLayout>
