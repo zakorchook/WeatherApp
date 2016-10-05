@@ -46,7 +46,7 @@ public class RestClient {
     public void getDataByCity(final String city, String locale) {
         EventBus.getDefault().post(new ActionProgressBar(true, false));
         final Request request = new Request.Builder()
-                .url(doUrl(city, locale)).build();
+                .url(makeUrl(city, locale)).build();
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Request request, IOException e) {
@@ -73,25 +73,49 @@ public class RestClient {
         });
     }
 
-    private String doUrl(String city, String locale) {
-//        Log.d(TAG, "doUrl: "+ROOT_URL + city + LOCALE_QUERY+ locale + API_KEY);
-        return ROOT_URL + city + LOCALE_QUERY+ locale + API_KEY;
+    private String makeUrl(String city, String locale) {
+        return ROOT_URL + city + LOCALE_QUERY + locale + API_KEY;
     }
 
-    private WeatherData getWeatherDataFromJson(JSONObject fullObject, String city) throws JSONException {
+
+    /**
+     * If @param fullObject or some key-values is wrong, return at least some data
+     */
+    private WeatherData getWeatherDataFromJson(JSONObject fullObject, String city) {
         WeatherData weatherData = new WeatherData();
         weatherData.city = city;
-        JSONObject weatherObject = fullObject.getJSONArray("weather").getJSONObject(0);
-        weatherData.description = weatherObject.getString("description");
-        weatherData.icon = weatherObject.getString("icon");
-        JSONObject mainObject = fullObject.getJSONObject("main");
-        weatherData.temp = mainObject.getDouble("temp");
-        weatherData.temp_min = mainObject.getDouble("temp_min");
-        weatherData.temp_max = mainObject.getDouble("temp_max");
+        try {
+            JSONObject weatherObject = fullObject.getJSONArray("weather").getJSONObject(0);
+            try {
+                weatherData.description = weatherObject.getString("description");
+            } catch (JSONException ignored) {
+            }
+            try {
+                weatherData.icon = weatherObject.getString("icon");
+            } catch (JSONException ignored) {
+            }
+        } catch (JSONException ignored) {
+        }
+        try {
+            JSONObject mainObject = fullObject.getJSONObject("main");
+            try {
+                weatherData.temp = mainObject.getDouble("temp");
+            } catch (JSONException ignored) {
+            }
+            try {
+                weatherData.temp_min = mainObject.getDouble("temp_min");
+            } catch (JSONException ignored) {
+            }
+            try {
+                weatherData.temp_max = mainObject.getDouble("temp_max");
+            } catch (JSONException ignored) {
+            }
+        } catch (JSONException ignored) {
+        }
         return weatherData;
     }
 
-    public void close(){
+    public void close() {
         client = null;
         instance = null;
     }

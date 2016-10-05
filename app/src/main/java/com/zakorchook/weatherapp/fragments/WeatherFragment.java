@@ -19,6 +19,7 @@ import com.zakorchook.weatherapp.util.MyConstants;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.Locale;
 
@@ -97,18 +98,23 @@ public class WeatherFragment extends Fragment {
     }
 
     private void refreshUI(WeatherData currentWeatherData) {
-        if(currentWeatherData != null){
-            Glide.with(WeatherFragment.this)
-                    .load(BASE_ICON_URL + currentWeatherData.icon + ICON_FORMAT)
-                    .placeholder(R.drawable.ic_question)
-                    .into(imageViewWeather);
+        if (currentWeatherData != null) {
+            if (currentWeatherData.icon != null)
+                Glide.with(WeatherFragment.this)
+                        .load(BASE_ICON_URL + currentWeatherData.icon + ICON_FORMAT)
+                        .placeholder(R.drawable.ic_question)
+                        .into(imageViewWeather);
+            // can't be null
             textViewCity.setText(getCityTitle(currentWeatherData.city));
             // calculate textViewTemp size for other screen size and configuration
             textViewTemp.setTextSize(pxToDp((int) (getResources().getDimension(R.dimen.weather_image_size) * 0.4f)));
+
             textViewTemp.setText(fromKelvinToCelsius(currentWeatherData.temp));
             textViewTempMin.setText(fromKelvinToCelsius(currentWeatherData.temp_min));
             textViewTempMax.setText(fromKelvinToCelsius(currentWeatherData.temp_max));
-            textViewDescription.setText(currentWeatherData.description);
+
+            if (currentWeatherData.description != null)
+                textViewDescription.setText(currentWeatherData.description);
         }
     }
 
@@ -121,15 +127,10 @@ public class WeatherFragment extends Fragment {
             return (int) Math.round(kelvin - ABS_NULL) + DEGREE;
     }
 
-    @Subscribe
+    @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(final WeatherData event) {
         currentCity = event.city;
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                refreshUI(event);
-            }
-        });
+        refreshUI(event);
     }
 
     private String getCityTitle(String city) {
@@ -152,7 +153,7 @@ public class WeatherFragment extends Fragment {
     }
 
     private int pxToDp(int px) {
-        DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
+        final DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
         return Math.round(px / (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
     }
 }

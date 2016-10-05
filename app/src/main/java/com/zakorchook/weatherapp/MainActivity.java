@@ -22,6 +22,7 @@ import com.zakorchook.weatherapp.util.MyConstants;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.Locale;
 
@@ -29,6 +30,9 @@ public class MainActivity extends AppCompatActivity implements PrefsFragment.OnF
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final String CITY_KEY = "CITY_KEY";
+
+    private static final int HALF_HOUR = 30 * 60 * 1000;
+
     private Toolbar toolbar;
     private FragmentManager fragmentManager;
     private ProgressBar progressBar;
@@ -47,13 +51,13 @@ public class MainActivity extends AppCompatActivity implements PrefsFragment.OnF
         setSupportActionBar(toolbar);
         currentCity = PreferenceManager.getDefaultSharedPreferences(this).getString(CITY_KEY, MyConstants.KIEV);
         fragmentManager.beginTransaction().add(R.id.container, WeatherFragment.newInstance(currentCity)).commit();
-        Log.d(TAG, "onCreate: "+ Locale.getDefault().getCountry());
+        Log.d(TAG, "onCreate: " + Locale.getDefault().getCountry());
     }
 
     @Override
     protected void onDestroy() {
         Log.d(TAG, "onDestroy: ");
-        if(handler != null){
+        if (handler != null) {
             handler.removeCallbacksAndMessages(null);
             handler = null;
         }
@@ -82,42 +86,36 @@ public class MainActivity extends AppCompatActivity implements PrefsFragment.OnF
         return super.onOptionsItemSelected(item);
     }
 
-    // Show/hide progressBar,and show error dialog, if needed.
-    @Subscribe
-    public void onEvent(final ActionProgressBar event){
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Log.d(TAG, "run: ActionProgressBar "+event.show);
-                if (event.show){
-                    progressBar.setVisibility(View.VISIBLE);
-                } else {
-                    progressBar.setVisibility(View.GONE);
-                }
-                if (event.isFail){
-                    ErrorDialog.newInstance(currentCity).show(fragmentManager, null);
-                    lastRequestIsFailed = true;
-                } else {
-                    lastRequestIsFailed = false;
-                }
-            }
-        });
+    /**
+     * Show/hide progressBar,and show error dialog, if needed.
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(final ActionProgressBar event) {
+        Log.d(TAG, "run: ActionProgressBar " + event.show);
+        if (event.show) {
+            progressBar.setVisibility(View.VISIBLE);
+        } else {
+            progressBar.setVisibility(View.GONE);
+        }
+        if (event.isFail) {
+            ErrorDialog.newInstance(currentCity).show(fragmentManager, null);
+            lastRequestIsFailed = true;
+        } else {
+            lastRequestIsFailed = false;
+        }
     }
 
-    @Subscribe
-    public void onEvent(final WeatherData event){
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                setTimerForRefreshData(event.city);
-            }
-        });
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(final WeatherData event) {
+        setTimerForRefreshData(event.city);
     }
 
-    //Hide settings icon when PrefsFragment is showing
+    /**
+     * Hide settings icon when PrefsFragment is showing
+     */
     @Override
     public void onFragmentPrefsResume(boolean hideMenu) {
-            toolbar.getMenu().getItem(0).setVisible(!hideMenu);
+        toolbar.getMenu().getItem(0).setVisible(!hideMenu);
         if (hideMenu) {
             toolbar.setTitle(R.string.settings_title);
         } else {
@@ -131,10 +129,12 @@ public class MainActivity extends AppCompatActivity implements PrefsFragment.OnF
         PreferenceManager.getDefaultSharedPreferences(this).edit().putString(CITY_KEY, currentCity).apply();
     }
 
-    // set 30min delayed for repeat request and refresh data
-    private void setTimerForRefreshData(final String currentCity){
+    /**
+     * set 30min delayed for repeat request and refresh data
+     */
+    private void setTimerForRefreshData(final String currentCity) {
         Log.d(TAG, "setTimerForRefreshData: ");
-        if(handler == null){
+        if (handler == null) {
             handler = new Handler();
         } else {
             handler.removeCallbacksAndMessages(null);
@@ -145,6 +145,6 @@ public class MainActivity extends AppCompatActivity implements PrefsFragment.OnF
                 Log.d(TAG, "setTimerForRefreshData run:");
                 RestClient.getInstance().getDataByCity(currentCity, Locale.getDefault().getLanguage());
             }
-        }, 30*60*1000);
+        }, HALF_HOUR);
     }
 }
