@@ -95,7 +95,6 @@ public class PrefsFragment extends PreferenceFragmentCompat {
 
     public interface OnFragmentInteractionListener {
         void onFragmentPrefsResume(boolean hideMenu);
-
         void onCurrentCityChanged(String currentCity);
     }
 }
