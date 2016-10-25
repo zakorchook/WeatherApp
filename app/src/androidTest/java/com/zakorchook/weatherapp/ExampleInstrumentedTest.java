@@ -48,6 +48,7 @@ public class ExampleInstrumentedTest {
 
     @Test
     public void testUi() throws Exception {
+ //       Thread.sleep(2000);
         openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getTargetContext());
         for (String s : keyNamesList) {
             prefsItemClick(s);
